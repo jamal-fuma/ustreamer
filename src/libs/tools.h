@@ -106,23 +106,23 @@ INLINE void get_now(clockid_t clk_id, time_t *sec, long *msec) {
 }
 
 #if defined(CLOCK_MONOTONIC_RAW)
-#	define X_CLOCK_MONOTONIC CLOCK_MONOTONIC_RAW
+#	define US_CLOCK_MONOTONIC CLOCK_MONOTONIC_RAW
 #elif defined(CLOCK_MONOTONIC_FAST)
-#	define X_CLOCK_MONOTONIC CLOCK_MONOTONIC_FAST
+#	define US_CLOCK_MONOTONIC CLOCK_MONOTONIC_FAST
 #else
-#	define X_CLOCK_MONOTONIC CLOCK_MONOTONIC
+#	define US_CLOCK_MONOTONIC CLOCK_MONOTONIC
 #endif
 
 INLINE long double get_now_monotonic(void) {
 	time_t sec;
 	long msec;
-	get_now(X_CLOCK_MONOTONIC, &sec, &msec);
+	get_now(US_CLOCK_MONOTONIC, &sec, &msec);
 	return (long double)sec + ((long double)msec) / 1000;
 }
 
 INLINE uint64_t get_now_monotonic_u64(void) {
 	struct timespec ts;
-	assert(!clock_gettime(X_CLOCK_MONOTONIC, &ts));
+	assert(!clock_gettime(US_CLOCK_MONOTONIC, &ts));
 	return (uint64_t)(ts.tv_nsec / 1000) + (uint64_t)ts.tv_sec * 1000000;
 }
 
@@ -130,8 +130,6 @@ INLINE uint64_t get_now_id(void) {
 	uint64_t now = get_now_monotonic_u64();
 	return (uint64_t)triple_u32(now) | ((uint64_t)triple_u32(now + 12345) << 32);
 }
-
-#undef X_CLOCK_MONOTONIC
 
 INLINE long double get_now_real(void) {
 	time_t sec;
